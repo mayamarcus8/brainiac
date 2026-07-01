@@ -31,7 +31,8 @@ CREATE TABLE IF NOT EXISTS attempts (
 CREATE TABLE IF NOT EXISTS attempt_items (
   id            SERIAL PRIMARY KEY,
   attempt_id    INTEGER REFERENCES attempts(id) ON DELETE CASCADE,
-  item_index    INTEGER NOT NULL,    -- position in the sequence (0-based)
+  item_index    INTEGER NOT NULL,    -- position in the sequence\word flow (0-based)
+  item_value    TEXT NOT NULL,    -- the actual item tapped\word produced by the user
   is_correct    BOOLEAN NOT NULL,    -- whether this specific item was recalled correctly
   responded_at  TIMESTAMPTZ DEFAULT NOW()
 );
