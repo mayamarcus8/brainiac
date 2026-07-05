@@ -11,8 +11,8 @@ CREATE TABLE IF NOT EXISTS sessions (
   user_id       TEXT REFERENCES users(id) ON DELETE CASCADE,
   task_type     TEXT NOT NULL,    -- 'memory_span' | 'pattern_recognition' | 'verbal_fluency' | 'processing_speed'
   accuracy      NUMERIC(5,2),    -- average normalized attempt score
-  started_at      TIMESTAMPTZ DEFAULT NOW(),
-  ended_at        TIMESTAMPTZ
+  started_at    TIMESTAMPTZ DEFAULT NOW(),
+  ended_at      TIMESTAMPTZ
 );
 
 -- Attempt results for each one full round within a session
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS attempts (
   id            SERIAL PRIMARY KEY,
   session_id    INTEGER REFERENCES sessions(id) ON DELETE CASCADE,
   difficulty    INTEGER DEFAULT 1,    -- adaptive difficulty level (1–10)
-  score         NUMERIC(5,2) NOT NULL,
+  score         NUMERIC(5,2),
   response_time INTEGER,    -- total attempt duration in milliseconds
   attempted_at  TIMESTAMPTZ DEFAULT NOW()
 );
