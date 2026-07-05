@@ -1,7 +1,8 @@
 -- Users (synced from Clerk)
 CREATE TABLE IF NOT EXISTS users (
-  id          TEXT PRIMARY KEY,    -- Clerk user ID
-  email       TEXT UNIQUE NOT NULL,
+  id          SERIAL PRIMARY KEY,    -- Internal ID
+  clerk_id    TEXT UNIQUE,    -- Clerk user ID (NULL for guest users)
+  email       TEXT UNIQUE,    -- Clerk email (NULL for guest users)
   created_at  TIMESTAMPTZ DEFAULT NOW()
 );
 
