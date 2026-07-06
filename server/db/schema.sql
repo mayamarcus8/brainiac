@@ -1,9 +1,10 @@
 -- Users (synced from Clerk)
 CREATE TABLE IF NOT EXISTS users (
-  id          SERIAL PRIMARY KEY,    -- Internal ID
-  clerk_id    TEXT UNIQUE,    -- Clerk user ID (NULL for guest users)
-  email       TEXT UNIQUE,    -- Clerk email (NULL for guest users)
-  created_at  TIMESTAMPTZ DEFAULT NOW()
+  id           SERIAL PRIMARY KEY,    -- Internal ID
+  clerk_id     TEXT UNIQUE,    -- Clerk user ID (NULL for guest users)
+  email        TEXT UNIQUE,    -- Clerk email (NULL for guest users)
+  created_at   TIMESTAMPTZ DEFAULT NOW(),
+  guest_token  TEXT UNIQUE    -- for guest users only, used to identify them without Clerk
 );
 
 -- Session results for each cognitive task attempt
