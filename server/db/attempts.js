@@ -21,3 +21,12 @@ export async function insertAttempt(sessionId, difficulty) {
   );
   return rows[0].id;
 }
+
+// Called at /generate - verifies the session exists and belongs to the user.
+export async function sessionBelongsTo(sessionId, userId) {
+  const { rows } = await pool.query(
+    `SELECT 1 FROM sessions WHERE id = $1 AND user_id = $2`,
+    [sessionId, userId]
+  );
+  return rows.length > 0;
+}
