@@ -39,3 +39,7 @@ router.post('/session/start', syncUser, async (req, res) => {
   // (and eventually as X-Guest-Id at registration). No-op for signed-in users.
   res.json({ sessionId, guestToken: guestToken ?? null });
 });
+
+// TODO: POST /session/end — set ended_at, compute accuracy. Build after task scoring exists.
+
+export default router;
