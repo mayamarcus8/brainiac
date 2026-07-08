@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS users (
 -- Session results for each cognitive task attempt
 CREATE TABLE IF NOT EXISTS sessions (
   id            SERIAL PRIMARY KEY,
-  user_id       TEXT REFERENCES users(id) ON DELETE CASCADE,
+  user_id       INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  session_token TEXT UNIQUE NOT NULL,    -- random token to identify the session (sent to client)
   task_type     TEXT NOT NULL,    -- 'memory_span' | 'pattern_recognition' | 'verbal_fluency' | 'processing_speed'
   accuracy      NUMERIC(5,2),    -- average normalized attempt score
   started_at    TIMESTAMPTZ DEFAULT NOW(),
@@ -42,7 +43,7 @@ CREATE TABLE IF NOT EXISTS attempt_items (
 -- Cognitive profile snapshot per user (updated after each session)
 CREATE TABLE IF NOT EXISTS profiles (
   id            SERIAL PRIMARY KEY,
-  user_id       TEXT REFERENCES users(id) ON DELETE CASCADE,
+  user_id       INTEGER REFERENCES users(id) ON DELETE CASCADE,
   task_type     TEXT NOT NULL,
   score         NUMERIC(5,2) DEFAULT 50,
   updated_at    TIMESTAMPTZ DEFAULT NOW(),
@@ -52,7 +53,7 @@ CREATE TABLE IF NOT EXISTS profiles (
 -- Activity metadata per user
 CREATE TABLE IF NOT EXISTS user_stats (
   id              SERIAL PRIMARY KEY,
-  user_id         TEXT UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+  user_id         INTEGER UNIQUE REFERENCES users(id) ON DELETE CASCADE,
   current_streak  INTEGER DEFAULT 0,
   longest_streak  INTEGER DEFAULT 0,
   last_active     TIMESTAMPTZ,
@@ -62,7 +63,7 @@ CREATE TABLE IF NOT EXISTS user_stats (
 -- Badges earned by users
 CREATE TABLE IF NOT EXISTS badges (
   id          SERIAL PRIMARY KEY,
-  user_id     TEXT REFERENCES users(id) ON DELETE CASCADE,
+  user_id     INTEGER REFERENCES users(id) ON DELETE CASCADE,
   badge_type  TEXT NOT NULL,    -- 'first_win' | 'streak_7' | 'memory_master' etc.
   earned_at   TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id, badge_type)    -- no duplicate badges

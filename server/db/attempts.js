@@ -1,12 +1,12 @@
 import { pool } from './pool.js';
 
 // Called at /session/start - creates a session row, returns its id. 
-export async function insertSession(userId, taskType) {
+export async function insertSession(userId, taskType, sessionToken) {
   const { rows } = await pool.query(
-    `INSERT INTO sessions (user_id, task_type)
-     VALUES ($1, $2)
+    `INSERT INTO sessions (user_id, task_type, session_token)
+     VALUES ($1, $2, $3)
      RETURNING id`,
-    [userId, taskType]
+    [userId, taskType, sessionToken]
   );
   return rows[0].id;
 }
@@ -22,11 +22,11 @@ export async function insertAttempt(sessionId, difficulty) {
   return rows[0].id;
 }
 
-// Called at /generate - verifies the session exists and belongs to the user.
-export async function sessionBelongsTo(sessionId, userId) {
+// Called at /generate - verifies the session exists.
+export async function getSessionByToken(sessionToken) {
   const { rows } = await pool.query(
-    `SELECT 1 FROM sessions WHERE id = $1 AND user_id = $2`,
-    [sessionId, userId]
+    `SELECT id FROM sessions WHERE session_token = $1`,
+    [sessionToken]
   );
-  return rows.length > 0;
+  return rows[0] ?? null;
 }

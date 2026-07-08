@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { getAuth } from '@clerk/express';
 import { syncUser } from '../middleware/syncUser.js';
+import {v4 as uuid} from 'uuid';
 import { insertSession } from '../db/attempts.js';
 import { insertGuestUser, getGuestByToken } from '../db/users.js';
 
@@ -33,11 +34,12 @@ router.post('/session/start', syncUser, async (req, res) => {
     }
   }
 
-  const sessionId = await insertSession(userId, taskType);
+  const sessionToken = uuid(); // Unique token for this session, sent to the client.
+  const sessionId = await insertSession(userId, taskType, sessionToken);
 
   // Tell the client the guest token so it can send it back on the NEXT start
   // (and eventually as X-Guest-Id at registration). No-op for signed-in users.
-  res.json({ sessionId, guestToken: guestToken ?? null });
+  res.json({ sessionToken, guestToken: guestToken ?? null });
 });
 
 // TODO: POST /session/end — set ended_at, compute accuracy. Build after task scoring exists.
