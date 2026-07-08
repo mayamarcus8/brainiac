@@ -22,6 +22,14 @@ export async function insertAttempt(sessionId, difficulty) {
   return rows[0].id;
 }
 
+export async function insertAttemptItem(attemptId, itemIndex, isCorrect, itemValue) {
+  await pool.query(
+    `INSERT INTO attempt_items (attempt_id, item_index, is_correct, item_value)
+     VALUES ($1, $2, $3, $4)`,
+    [attemptId, itemIndex, isCorrect, itemValue]
+  );
+}
+
 // Called at /generate - verifies the session exists.
 export async function getSessionByToken(sessionToken) {
   const { rows } = await pool.query(
