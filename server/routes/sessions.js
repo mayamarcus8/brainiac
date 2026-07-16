@@ -2,11 +2,12 @@ import { Router } from 'express';
 import { getAuth } from '@clerk/express';
 import { syncUser } from '../middleware/syncUser.js';
 import {v4 as uuid} from 'uuid';
-import { insertSession } from '../db/attempts.js';
+import { insertSession, getSessionByToken, closeSession } from '../db/attempts.js';
 import { insertGuestUser, getGuestByToken } from '../db/users.js';
 
 const router = Router();
 
+// POST /session/start
 // Optional-auth: uses the authenticated user if present, else treats as guest.
 // TODO: syncUser becomes resolve-only once the registration handler owns claim/insert.
 router.post('/session/start', syncUser, async (req, res) => {
@@ -37,11 +38,22 @@ router.post('/session/start', syncUser, async (req, res) => {
   const sessionToken = uuid(); // Unique token for this session, sent to the client.
   const sessionId = await insertSession(userId, taskType, sessionToken);
 
-  // Tell the client the guest token so it can send it back on the NEXT start
-  // (and eventually as X-Guest-Id at registration). No-op for signed-in users.
+  // Tell the client the guest token so it can send it back as X-Guest-Id.
+  // No-op for signed-in users.
   res.json({ sessionToken, guestToken: guestToken ?? null });
 });
 
-// TODO: POST /session/end — set ended_at, compute accuracy. Build after task scoring exists.
+// POST /session/end
+router.post('/session/end', async (req, res) => {
+  const { sessionToken } = req.body;
+
+  const session = await getSessionByToken(sessionToken);
+  if (!session) {
+    return res.status(403).json({ error: 'Invalid session' });
+  }
+
+  const accuracy = await closeSession(session.id);
+  res.json({ accuracy });
+});
 
 export default router;
