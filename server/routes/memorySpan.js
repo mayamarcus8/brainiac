@@ -1,15 +1,21 @@
 import { Router } from 'express';
 import { v4 as uuid } from 'uuid';
 import { generateMemorySpan, scoreMemorySpan } from '../services/tasks/memorySpan.js';
-import { insertAttempt, insertAttemptItem, getSessionByToken, getAttemptItems, updateAttemptScore, countCompletedAttempts } from '../db/attempts.js';
+import { nextDifficulty } from '../services/difficultyEngine.js';
+import { insertAttempt, insertAttemptItem, getSessionByToken, getAttemptItems, updateAttemptScore,
+    countCompletedAttempts, getLastAttemptDifficulty, getRecentAttemptScores } from '../db/attempts.js';
 import { registerAttempt, getAttempt, endAttempt } from '../services/attemptStore.js';
 import { ATTEMPTS_PER_SESSION } from '../services/tasks/attemptCounts.js';
+
+// Fixed starting difficulty. Later on, the between-session AI will write a per-user,
+// per-task starting difficulty and this default will only be the cold-start fallback.
+const STARTING_DIFFICULTY = 1;
 
 const router = Router();
 
 // POST /generate - creates a new memory span attempt for the given session token and difficulty.
 router.post('/generate', async (req, res) => {
-    const { sessionToken, difficulty = 1 } = req.body;
+    const { sessionToken } = req.body;
     
     // Verify possession of a valid session token as a credential.
     const session = await getSessionByToken(sessionToken);
@@ -23,6 +29,11 @@ router.post('/generate', async (req, res) => {
     if (completed >= target) {
         return res.status(409).json({ error: 'Session already complete' });
     }
+
+    // Get next difficulty for this attempt, based on the last attempt's difficulty and recent scores.
+    const lastDifficulty = await getLastAttemptDifficulty(session.id);
+    const recentScores = await getRecentAttemptScores(session.id);
+    const difficulty = nextDifficulty(lastDifficulty ?? STARTING_DIFFICULTY, recentScores);
 
     // Generate the task.
     const task = generateMemorySpan(difficulty);

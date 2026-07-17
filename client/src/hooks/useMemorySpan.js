@@ -18,11 +18,11 @@ export function useMemorySpan() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
 
-  const generate = useCallback(async (sessionToken, difficulty = 1) => {
+  const generate = useCallback(async (sessionToken) => {
     setPhase(Phase.GENERATING);
     setResult(null);
     try {
-      const data = await api('/tasks/memory-span/generate', { sessionToken, difficulty });
+      const data = await api('/tasks/memory-span/generate', { sessionToken });
       setTask(data);
       setAttemptToken(data.attemptToken);
       setPhase(Phase.STUDYING);

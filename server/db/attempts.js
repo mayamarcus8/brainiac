@@ -89,3 +89,29 @@ export async function closeSession(sessionId) {
   );
   return rows[0]?.accuracy ?? null;
 }
+
+// The difficulty of this session's most recent completed attempt.
+// Returns null if there are none yet (first attempt of the session).
+export async function getLastAttemptDifficulty(sessionId) {
+  const { rows } = await pool.query(
+    `SELECT difficulty FROM attempts
+     WHERE session_id = $1 AND score IS NOT NULL
+     ORDER BY attempted_at DESC
+     LIMIT 1`,
+    [sessionId]
+  );
+  return rows[0]?.difficulty ?? null;
+}
+
+// The last N completed attempt scores for this session, newest first.
+// Feeds the difficulty engine's rolling window.
+export async function getRecentAttemptScores(sessionId, limit = 3) {
+  const { rows } = await pool.query(
+    `SELECT score FROM attempts
+     WHERE session_id = $1 AND score IS NOT NULL
+     ORDER BY attempted_at DESC
+     LIMIT $2`,
+    [sessionId, limit]
+  );
+  return rows.map(r => Number(r.score));
+}
