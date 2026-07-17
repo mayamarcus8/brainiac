@@ -49,6 +49,7 @@ router.post('/generate', async (req, res) => {
         attemptId,
         answer: task.answer,    // ['fish','dress',...] - server truth, never sent
         difficulty,
+        tapCount: 0,
     });
 
     // Strip the answer and send display data + the token the client uses for /tap.
@@ -58,7 +59,7 @@ router.post('/generate', async (req, res) => {
 
 // POST /tap - receives a single tap from the client and checks it against the answer key.
 router.post('/tap', async (req, res) => {
-    const { attemptToken, itemId, itemIndex } = req.body;
+    const { attemptToken, itemId } = req.body;
 
     // Verify possession of a valid attempt token as a credential.
     // getAttempt also refreshes lastActivityAt (renews the idle-timeout window).
@@ -68,6 +69,7 @@ router.post('/tap', async (req, res) => {
     }
 
     // Score this one tap against the answer key at this position.
+    const itemIndex = attempt.tapCount++;
     const isCorrect = attempt.answer[itemIndex] === itemId;
 
     // Persist as an attempt_item.

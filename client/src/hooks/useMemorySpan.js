@@ -32,9 +32,9 @@ export function useMemorySpan() {
   // Component calls this when the study animation finishes (it owns the timing).
   const startRecall = useCallback(() => setPhase(Phase.RECALLING), []);
 
-  const sendTap = useCallback(async (itemId, itemIndex) => {
+  const sendTap = useCallback(async (itemId) => {
     try {
-      const { isCorrect } = await api('/tasks/memory-span/tap', { attemptToken, itemId, itemIndex });
+      const { isCorrect } = await api('/tasks/memory-span/tap', { attemptToken, itemId });
       return isCorrect;
     } catch (e) { setError(e.message); }
   }, [api, attemptToken]);
