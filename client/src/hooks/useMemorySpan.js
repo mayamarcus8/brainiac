@@ -47,5 +47,13 @@ export function useMemorySpan() {
     } catch (e) { setError(e.message); }
   }, [api, attemptToken]);
 
-  return { phase, task, result, error, generate, startRecall, sendTap, complete };
+  const reset = useCallback(() => {
+    setPhase(Phase.IDLE);
+    setTask(null);
+    setAttemptToken(null);
+    setResult(null);
+    setError(null);
+  }, []);
+
+  return { phase, task, result, error, generate, startRecall, sendTap, complete, reset };
 }

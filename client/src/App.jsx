@@ -1,10 +1,11 @@
 import './App.css'
 import { SignInButton, SignUpButton, Show, UserButton } from '@clerk/react'
+import { MemorySpanRunner } from './pages/MemorySpanRunner.jsx';
 
-function App() {
+export default function App() {
 
   return (
-    <>
+    <div>
       <header>
         <Show when="signed-out">
           <SignInButton />
@@ -15,8 +16,10 @@ function App() {
         </Show>
         <h1>brAIniac</h1>
       </header>
-    </>
-  )
-}
 
-export default App
+      <main>
+        <MemorySpanRunner />
+      </main>
+    </div>
+  );
+}

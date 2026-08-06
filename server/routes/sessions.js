@@ -10,7 +10,7 @@ const router = Router();
 // POST /session/start
 // Optional-auth: uses the authenticated user if present, else treats as guest.
 // TODO: syncUser becomes resolve-only once the registration handler owns claim/insert.
-router.post('/session/start', syncUser, async (req, res) => {
+router.post('/start', syncUser, async (req, res) => {
   const { taskType } = req.body;
   const clerkId = getAuth(req).userId ?? null;
 
@@ -44,7 +44,7 @@ router.post('/session/start', syncUser, async (req, res) => {
 });
 
 // POST /session/end
-router.post('/session/end', async (req, res) => {
+router.post('/end', async (req, res) => {
   const { sessionToken } = req.body;
 
   const session = await getSessionByToken(sessionToken);

@@ -18,7 +18,7 @@ export async function syncUser(req, res, next) {
       return next();
     }
 
-    const clerkUser = await clerkClient.users.getUser(userId);
+    const clerkUser = await clerkClient.users.getUser(clerkId);
     const email = clerkUser.emailAddresses[0]?.emailAddress;
 
     // Claim an unclaimed guest row if the client supplied one.
