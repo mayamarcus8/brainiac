@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
+
+# Build output
+dist/
+build/
+
+# Editor/OS
+.DS_Store
+.vscode/
+.idea/
+Thumbs.db
+
+# Coverage
+coverage/
+
+# Claude Code (personal)
+CLAUDE.local.md
+.claude/settings.local.json
